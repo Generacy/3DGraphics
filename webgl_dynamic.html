@@ -66,7 +66,10 @@
 			var SCREEN_WIDTH = window.innerWidth;
 
 			var container;
-
+			var mouseX = 0, mouseY = 0;
+			var windowHalfX = window.innerWidth / 2;
+			var windowHalfY = window.innerHeight / 2;
+			
 			var camera, scene, renderer, mesh, directionalLight;
 
 			var parent, meshes = [], clonemeshes = [];
@@ -208,9 +211,9 @@
 				composer.addPass( effectFocus );
 
 				//
-
+				document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 				window.addEventListener( 'resize', onWindowResize, false );
-
+				
 			}
 
 			//
@@ -287,21 +290,16 @@
 
 			}
 
+			function onDocumentMouseMove( event ) {
+
+				mouseX = ( event.clientX - windowHalfX ) / 2;
+				mouseY = ( event.clientY - windowHalfY ) / 2;
+
+			}
+			
 			function render () {
 
-				delta = 10 * clock.getDelta();
 
-				delta = delta < 2 ? delta : 2;
-/*
-				parent.rotation.y += -0.02 * delta;
-
-				for( j = 0, jl = clonemeshes.length; j < jl; j ++ ) {
-
-					cm = clonemeshes[ j ];
-					cm.mesh.rotation.y += -0.1 * delta * cm.speed;
-
-				}
-*/
 				for( j = 0, jl = meshes.length; j < jl; j ++ ) {
 
 					data = meshes[ j ];
@@ -331,9 +329,15 @@
 
 				}
 
+				camera.position.x += ( mouseX - camera.position.x ) * 1.5;
+				camera.position.y += ( - mouseY - camera.position.y ) * 1.5;
+
+				
 				
 				renderer.clear();
-				composer.render( 0.01 );
+				camera.lookAt( scene.position );				
+				renderer.render( scene, camera );
+				//composer.render( 0.01 );
 
 			}
 
